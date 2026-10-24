@@ -175,6 +175,14 @@ describe('radar diagrams', () => {
     }
   });
 
+  it('should name the axis by id, not its encoded label, when a curve entry is missing', async () => {
+    const str = `radar-beta
+    axis a["#35;x"], b
+    curve c{ b: 1 }
+    `;
+    await expect(parser.parse(str)).rejects.toThrow('Missing entry for axis a');
+  });
+
   describe('renderer', () => {
     describe('relativeRadius', () => {
       it('should calculate relative radius', () => {

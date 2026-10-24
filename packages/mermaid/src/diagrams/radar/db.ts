@@ -84,7 +84,7 @@ const computeCurveEntries = (entries: Entry[]): number[] => {
   return axes.map((axis) => {
     const entry = entries.find((entry) => entry.axis?.$refText === axis.name);
     if (entry === undefined) {
-      throw new Error('Missing entry for axis ' + axis.label);
+      throw new Error('Missing entry for axis ' + axis.name);
     }
     return entry.value;
   });
