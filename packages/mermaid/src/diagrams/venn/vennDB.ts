@@ -1,6 +1,6 @@
 import type { VennDB, VennData, VennTextData, VennStyleData } from './vennTypes.js';
 import type { VennDiagramConfig } from '../../config.type.js';
-import { cleanAndMerge } from '../../utils.js';
+import { cleanAndMerge, decodeEntities, entityDecode } from '../../utils.js';
 import { getConfig as commonGetConfig } from '../../config.js';
 import {
   clear,
@@ -81,7 +81,9 @@ export const validateUnionIdentifiers: VennDB['validateUnionIdentifiers'] = (ide
   const normalized = normalizeIdentifierList(identifierList);
   const unknown = normalized.filter((identifier) => !knownSets.has(identifier));
   if (unknown.length > 0) {
-    throw new Error(`unknown set identifier: ${unknown.join(', ')}`);
+    // Ids hold the placeholders written by encodeEntities; decode them so the message shows what was typed.
+    const shown = (id: string) => (id.includes('ﬂ°') ? entityDecode(decodeEntities(id)) : id);
+    throw new Error(`unknown set identifier: ${unknown.map(shown).join(', ')}`);
   }
 };
 

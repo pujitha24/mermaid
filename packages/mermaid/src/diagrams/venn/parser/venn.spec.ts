@@ -2,6 +2,7 @@
 import venn from './venn.jison';
 import { db } from '../vennDB.js';
 import { expect } from 'vitest';
+import { encodeEntities } from '../../../utils.js';
 
 describe('Venn diagram', function () {
   beforeEach(function () {
@@ -237,6 +238,15 @@ describe('Venn diagram', function () {
         union Foo,Buz
     `;
     expect(() => venn.parse(str)).toThrow('unknown set identifier');
+  });
+
+  test('unknown identifier error shows decoded entity codes', () => {
+    // mermaid.parse runs encodeEntities on the text before it reaches the parser
+    const str = encodeEntities(`venn-beta
+        set A
+        union A,"B#35;x"
+    `);
+    expect(() => venn.parse(str)).toThrow('unknown set identifier: B#x');
   });
 
   test('quoted identifiers', () => {
