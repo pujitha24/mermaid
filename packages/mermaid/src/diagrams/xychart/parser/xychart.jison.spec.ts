@@ -94,6 +94,22 @@ describe('Testing xychart jison file', () => {
     });
   });
 
+  it('parse markdown strings in title, x-axis and series name', () => {
+    const str =
+      'xychart \n    title "`md`"\n    x-axis "`**bold**`" ["`**a**`", b]\n    line "`*s*`" [1, 2]\n';
+    expect(parserFnConstructor(str)).not.toThrow();
+    expect(mockDB.setDiagramTitle).toHaveBeenCalledWith('md');
+    expect(mockDB.setXAxisTitle).toHaveBeenCalledWith({ text: '**bold**', type: 'markdown' });
+    expect(mockDB.setXAxisBand).toHaveBeenCalledWith([
+      { text: '**a**', type: 'markdown' },
+      { text: 'b', type: 'text' },
+    ]);
+    expect(mockDB.setLineData).toHaveBeenCalledWith({ text: '*s*', type: 'markdown' }, [
+      { label: '', value: 1 },
+      { label: '', value: 2 },
+    ]);
+  });
+
   it('parse x-axis with axis name with "', () => {
     const str = 'xychart \n    x-axis "xAxisName has space"\n';
     expect(parserFnConstructor(str)).not.toThrow();
