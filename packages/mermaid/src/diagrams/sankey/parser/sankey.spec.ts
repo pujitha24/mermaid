@@ -87,5 +87,53 @@ describe('Sankey diagram', function () {
         );
       });
     }
+
+    it.each([
+      ['trailing blank after the header', 'sankey-beta \na,b,1', [['a', 'b', 1]]],
+      [
+        'tab-indented row',
+        'sankey-beta\n\ta,b,1\nc,d,2',
+        [
+          ['a', 'b', 1],
+          ['c', 'd', 2],
+        ],
+      ],
+      [
+        'spaces-only row',
+        'sankey-beta\na,b,1\n   \nc,d,2',
+        [
+          ['a', 'b', 1],
+          ['c', 'd', 2],
+        ],
+      ],
+      [
+        'blank before a quoted field',
+        'sankey-beta\na,b,1\n "c d",e,2',
+        [
+          ['a', 'b', 1],
+          ['c d', 'e', 2],
+        ],
+      ],
+      [
+        'blank after a quoted field',
+        'sankey-beta\nd,e,"2" \ng,h,3',
+        [
+          ['d', 'e', 2],
+          ['g', 'h', 3],
+        ],
+      ],
+    ])('ignores blanks at the edge of a row: %s', (_name, text, links) => {
+      sankey.parser.parse(prepareTextForParsing(text));
+
+      expect(
+        sankey.parser.yy
+          .getGraph()
+          .links.map((l: { source: string; target: string; value: number }) => [
+            l.source,
+            l.target,
+            l.value,
+          ])
+      ).toEqual(links);
+    });
   });
 });
